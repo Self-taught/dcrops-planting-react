@@ -64,7 +64,7 @@ class App extends Component {
     loadData = (userName) => {
         this.findMultiple(userName, 0).then(response => {
             if (!response[0]) {
-                alert('Please enter the right user name in lowercase letters!')
+                alert('Please refresh and enter the right user name in lowercase letters!')
             } else {
                 this.setState({ userData: response, userName: response[0]['account'] })
             }
