@@ -241,14 +241,15 @@ class App extends Component {
 
         const keychain = window.hive_keychain;
         keychain.requestCustomJson(this.state.userName, 'dcrops', 'Active', JSON.stringify({ operation: "plantMultiple", payload: updatedFinalData }), 'Plant Seeds!', (response) => {
-        });
-
-        this.setState({
-            finalData: updatedFinalData,
-            userData: this.state.userData.filter(el => !totalNfts.has(el['_id'])),
-            selectedSeeds: {},
-            landData: this.state.landData.filter(el => !totalNfts.has(el['_id'])),
-            seedsToPlant: ''
+            if (response.success === true) {
+                this.setState({
+                    finalData: updatedFinalData,
+                    userData: this.state.userData.filter(el => !totalNfts.has(el['_id'])),
+                    selectedSeeds: {},
+                    landData: this.state.landData.filter(el => !totalNfts.has(el['_id'])),
+                    seedsToPlant: ''
+                });
+            }
         });
     };
 
