@@ -297,6 +297,7 @@ class App extends Component {
                                             className="pa2 w-35 bg-green br3 center"
                                             type="submit"
                                             value='Plant' />
+                                        <p>After planting, change the land type to update land data. Otherwise land data may not update!</p>
                                     </div>
                                 </div>
                                 <Plant />
