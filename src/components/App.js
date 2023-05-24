@@ -63,18 +63,19 @@ class App extends Component {
 
     loadData = (userName) => {
         this.findMultiple(userName, 0).then(response => {
-            this.setState({ userData: response, userName: response[0]['account'] })
-            console.log(response)
-        }
-        )
+            if (!response[0]) {
+                alert('Please enter the right user name in lowercase letters!')
+            } else {
+                this.setState({ userData: response, userName: response[0]['account'] })
+            }
+        })
     }
 
     filterSeeds = (title) => {
         if (this.state.selectedSeeds[title]) {
-            console.log(this.state.selectedSeeds)
             delete this.state.selectedSeeds[title]
             const selectedSeeds = { ...this.state.selectedSeeds }
-            this.setState({ selectedSeeds }, () => console.log(this.state.selectedSeeds))
+            this.setState({ selectedSeeds })
             this.loadSeeds()
         }
         if (this.state.userData.length > 0) {
@@ -82,10 +83,8 @@ class App extends Component {
                 const nftType = el.properties.name
                 return nftType === title;
             });
-            // console.log(totalSeeds)
             const availableSeeds = totalSeeds.filter(el => {
                 const timestamp = JSON.parse(el.properties.secondary)
-                // console.log(timestamp['cd'])
                 function getDaysDifference(timestamp) {
                     const oneDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
@@ -104,7 +103,6 @@ class App extends Component {
                 return daysDifference >= 14;
             })
             const availableSeedIds = availableSeeds.map(el => el['_id'])
-            console.log(availableSeedIds)
             return availableSeedIds;
         } else {
             return 0;
@@ -159,10 +157,7 @@ class App extends Component {
                     emptyLands.push(foundPlot)
                 }
             })
-            console.log(emptyLands)
-            // console.log('Total Empty Plots: ', totalEmptyPlots)
 
-            // console.log(totalLands)
             this.setState({
                 totalLand: totalLands.length,
                 totalPlots: totalEmptyPlots,
@@ -185,7 +180,6 @@ class App extends Component {
             seedsToPlant: selectedSeeds,
             maxNfts: totalSeedsLands
         })
-        // console.log(this.state.seedsToPlant, 'Max Seeds: ', maxSeeds)
         // return selectedSeeds
     }
 
@@ -195,13 +189,20 @@ class App extends Component {
         } else {
             this.state.selectedSeeds[seed] = array
         }
-        console.log(this.state.selectedSeeds)
         this.loadSeeds();
     }
 
     plantSeeds = () => {
-        const { selectedSeeds, finalData, landData } = this.state;
+        const { selectedSeeds, landData } = this.state;
         const allSeeds = Object.values(selectedSeeds).flat();
+        if (allSeeds.length < 1) {
+            alert('Please Select seeds first to plant');
+            return;
+        }
+        if (landData.length < 1) {
+            alert('Please Select at least one seed and land type to plant');
+            return;
+        }
 
         // const updatedFinalData = [...finalData];
         const updatedFinalData = [];
@@ -237,16 +238,10 @@ class App extends Component {
 
             updatedFinalData.push(currentData);
         }
-        console.log(totalNfts)
-        if (totalNfts.has(119939)) {
-            console.log('Okay');
-        }
-        console.log(this.state.userData)
-        for (let d of this.state.userData) {
-            if (totalNfts.has(d['_id'])) {
-                console.log(d)
-            }
-        }
+
+        const keychain = window.hive_keychain;
+        keychain.requestCustomJson(this.state.userName, 'dcrops', 'Active', JSON.stringify({ operation: "plantMultiple", payload: updatedFinalData }), 'Plant Seeds!', (response) => {
+        });
 
         this.setState({
             finalData: updatedFinalData,
@@ -254,9 +249,6 @@ class App extends Component {
             selectedSeeds: {},
             landData: this.state.landData.filter(el => !totalNfts.has(el['_id'])),
             seedsToPlant: ''
-        }, () => {
-            console.log(this.state.finalData)
-            console.log(this.state.userData)
         });
     };
 
@@ -267,7 +259,7 @@ class App extends Component {
                 {
                     this.state.userData.length > 0 ?
                         <div>
-                            <div className="br3 ba near-black mv4 w-100 w-50-m w-25-l shadow-5 mw6 center">
+                            <div className="br3 ba near-black mv4 w-100 w-60-m w-60-l shadow-5 mw6 center">
                                 <div className="black pa4">
                                     <legend className="f2 fw6 ph0 mh0">Welcome {this.state.userName}</legend>
                                     <p>Max Seeds: 40</p>
@@ -275,22 +267,33 @@ class App extends Component {
                                     <ul>{this.state.seedsToPlant}</ul>
                                     <hr />
                                     <div className="mv2">
-                                        <label className="w-70" htmlFor="lands">Select the type of land: </label>
-                                        <select onChange={this.filterLands} className="mv1 w-30" name="lands" id="lands" >
-                                            <option value="">...</option>
-                                            <option value="Any">Any</option>
-                                            <option value="Hi-Tec Land">Hi-Tec Land</option>
-                                            <option value="Trinity Land">Trinity Land</option>
-                                            <option value="Fairy Garden">Fairy Garden</option>
-                                            <option value="Awesome Land">Awesome Land</option>
-                                            <option value="Fertile Land">Fertile Land</option>
-                                            <option value="Average Farmland">Average Farmland</option>
-                                        </select>
-                                        <p>Total Lands: {this.state.totalLand}</p>
+                                        <p className="w-100 f4 mv1">Select the type of land: </p>
+                                        <div className="container mv3">
+                                            <input onClick={this.filterLands} type="radio" id="Hi-Tec Land" name="landType" value="Hi-Tec Land" />
+                                            <label className="w-100 mv1 mh2" htmlFor="Hi-Tec Land">Hi-Tec Land</label><br />
+
+                                            <input onClick={this.filterLands} type="radio" id="Trinity Land" name="landType" value="Trinity Land" />
+                                            <label className="w-100 mv1 mh2" htmlFor="Trinity Land">Trinity Land</label><br />
+
+                                            <input onClick={this.filterLands} type="radio" id="Fairy Garden" name="landType" value="Fairy Garden" />
+                                            <label className="w-100 mv1 mh2" htmlFor="Fairy Garden">Fairy Garden</label><br />
+                                        </div>
+                                        <div className="container mv3">
+                                            <input onClick={this.filterLands} type="radio" id="Awesome Land" name="landType" value="Awesome Land" />
+                                            <label className="w-100 mv1 mh2" htmlFor="Awesome Land">Awesome Land</label><br />
+
+                                            <input onClick={this.filterLands} type="radio" id="Fertile Land" name="landType" value="Fertile Land" />
+                                            <label className="w-100 mv3 mh2" htmlFor="Fertile Land">Fertile Land</label><br />
+
+                                            <input onClick={this.filterLands} type="radio" id="Average Farmland" name="landType" value="Average Farmland" />
+                                            <label className="w-100 mv1 mh2" htmlFor="Average Farmland">Average Farmland</label><br />
+                                        </div>
+                                        <hr />
+
                                         <p>Total Plots Available to plant: {this.state.totalPlots}</p>
                                         <input
                                             onClick={this.plantSeeds}
-                                            className="pa2 w-35 bg-green br3 ml6"
+                                            className="pa2 w-35 bg-green br3 center"
                                             type="submit"
                                             value='Plant' />
                                     </div>
@@ -315,6 +318,7 @@ class App extends Component {
                             <div className="container">
                                 <Card title='Carrot' filterData={this.filterData} addSeeds={this.addSeeds} />
                                 <Card title='Garlic' filterData={this.filterData} addSeeds={this.addSeeds} />
+                                <Card title='King Weed' filterData={this.filterData} addSeeds={this.addSeeds} />
                             </div>
                         </div> : <SignIn loadData={this.loadData} />
                 }

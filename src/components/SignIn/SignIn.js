@@ -7,6 +7,7 @@ class SignIn extends React.Component {
         super();
         this.state = {
             userName: '',
+            isLoading: false
         }
     }
 
@@ -14,17 +15,13 @@ class SignIn extends React.Component {
         this.setState({ userName: event.target.value })
     }
 
-    signIn = () => {
+    loadData = () => {
+        if (this.state.userName.length > 1 && this.state.userName.length < 15) {
 
-        if (window.hive_keychain) {
-            const keychain = window.hive_keychain;
-
-            keychain.requestCustomJson(this.state.userName, 'dcrops', 'Active', JSON.stringify('Abc'), 'it works', (response) => {
-                console.log(response)
+            this.setState({ isLoading: true }, () => {
+                this.props.loadData(this.state.userName)
             });
-        } else {
-            console.log('You do not have hivekeychain!')
-        }
+        };
     }
 
     render() {
@@ -33,7 +30,7 @@ class SignIn extends React.Component {
                 <main className="pa4 black-80">
                     <div className="measure">
                         <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
-                            <legend className="f1 fw6 ph0 mh0">Log In</legend>
+                            <legend className="f1 fw6 ph0 mh0">Load Data</legend>
                             <div className="mt3">
                                 <label className="db fw6 lh-copy f6" htmlFor="userName">UserName</label>
                                 <input
@@ -46,13 +43,21 @@ class SignIn extends React.Component {
                                 />
                             </div>
                             <div className="mt3 log-in-button">
-                                <input
-                                    onClick={() => this.props.loadData(this.state.userName)}
-                                    className="pa2 input-reset ba bg-black hover-bg-black white w-100"
-                                    type="submit"
-                                    name="userName"
-                                    value="Log In"
-                                />
+                                {this.state.isLoading
+                                    ? <div>
+                                        <p className='f3'>'Loading your farms...Please wait...'</p>
+                                    </div>
+
+                                    : <input
+                                        onClick={
+                                            this.loadData
+                                        }
+                                        disabled={this.state.isLoading}
+                                        className="pa2 input-reset ba bg-black hover-bg-black white w-100"
+                                        type="submit"
+                                        name="userName"
+                                        value={this.state.isLoading ? 'Loading...' : 'Load Data'}
+                                    />}
                             </div>
                         </fieldset>
                     </div>
