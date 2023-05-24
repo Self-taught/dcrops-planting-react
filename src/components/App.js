@@ -249,6 +249,7 @@ class App extends Component {
                     landData: this.state.landData.filter(el => !totalNfts.has(el['_id'])),
                     seedsToPlant: ''
                 });
+                this.loadSeeds()
             }
         });
     };
