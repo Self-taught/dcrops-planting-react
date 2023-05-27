@@ -254,6 +254,150 @@ class App extends Component {
         });
     };
 
+    // Test Auto Planting Stuff
+
+    // filterEmptyLands = () => {
+    //     const validLandTypes = [
+    //         'Fairy Garden',
+    //         'Hi-Tec Land',
+    //         'Awesome Land',
+    //         'Trinity Land',
+    //         'Fertile Land',
+    //         'Average Farmland'
+    //     ];
+
+    //     const totalLands = this.state.userData.filter(el => validLandTypes.includes(el.properties.name));
+
+
+    //     const emptyLands = [];
+    //     let totalEmptyPlots = 0;
+
+    //     totalLands.forEach(land => {
+    //         const plots = JSON.parse(land.properties.secondary)
+    //         const emptyPlotArray = [];
+    //         let foundPlot = null;
+    //         plots['p'].forEach((el, i) => {
+    //             if (el === "") {
+    //                 totalEmptyPlots += 1;
+
+    //                 if (!foundPlot) {
+    //                     foundPlot = {
+    //                         landId: land['_id'],
+    //                         emptyPlots: []
+    //                     }
+    //                 }
+    //                 emptyPlotArray.push(i)
+    //             }
+    //         });
+
+    //         if (foundPlot) {
+    //             foundPlot.emptyPlots = emptyPlotArray;
+    //             emptyLands.push(foundPlot)
+    //         }
+    //     })
+
+    //     return emptyLands;
+    //     // this.setState({
+    //     //     totalLand: totalLands.length,
+    //     //     totalPlots: totalEmptyPlots,
+    //     //     landData: emptyLands
+    //     // });
+    // }
+
+    // filterPlantableSeeds = () => {
+    //     const seedTypes = ['Sunflower', 'King Weed', 'Raspberry', 'Sweet Potato', 'Beetroot', 'Hot Pepper', 'Pumpkin', 'Lavender', 'Hops', 'Garlic', 'Carrot', 'Thyme', 'Sage'];
+
+    //     if (this.state.userData.length > 0) {
+    //         const totalSeeds = this.state.userData.filter(el => seedTypes.includes(el.properties.name));
+
+    //         const availableSeeds = totalSeeds.filter(el => {
+    //             const timestamp = JSON.parse(el.properties.secondary)
+    //             function getDaysDifference(timestamp) {
+    //                 const oneDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+
+    //                 const currentDate = new Date();
+    //                 const targetDate = new Date(timestamp * 1000); // Multiply by 1000 to convert seconds to milliseconds
+
+    //                 const diffInMilliseconds = Math.abs(currentDate - targetDate);
+    //                 const diffInDays = Math.round(diffInMilliseconds / oneDay);
+
+    //                 return diffInDays;
+    //             }
+
+    //             // Example usage
+    //             const targetTimestamp = timestamp['cd'];
+    //             const daysDifference = getDaysDifference(targetTimestamp);
+    //             return daysDifference >= 14;
+    //         })
+    //         // const availableSeedIds = availableSeeds.map(el => el['_id'])
+    //         return availableSeeds;
+    //     } else {
+    //         return 0;
+    //     }
+    // }
+
+    // autoPlantSeeds = () => {
+    //     // Find all empty Lands
+    //     // Find plantable seeds
+    //     const emptyLands = this.filterEmptyLands()
+    //     const totalAvaliableSeeds = this.filterPlantableSeeds()
+
+    //     if (totalAvaliableSeeds.length < 1) {
+    //         return;
+    //     }
+    //     if (emptyLands.length < 1) {
+    //         return;
+    //     }
+
+    //     // const updatedFinalData = [...finalData];
+    //     const updatedFinalData = [];
+    //     const totalNfts = new Set();
+
+    //     for (let i = 0; i < landData.length && totalNfts.size < 48; i++) {
+    //         const el = landData[i];
+    //         const currentData = {
+    //             landID: el['landId'],
+    //             plant: []
+    //         };
+    //         if (!allSeeds.length) {
+    //             break;
+    //         }
+    //         totalNfts.add(el['landId']);
+
+    //         for (let j = 0; j < el['emptyPlots'].length && totalNfts.size < 48; j++) {
+    //             const p = el['emptyPlots'][j];
+
+    //             if (!allSeeds.length) {
+    //                 break;
+    //             }
+
+    //             const seedData = {
+    //                 seedID: allSeeds[0] || null,
+    //                 plotNo: p
+    //             };
+
+    //             totalNfts.add(allSeeds[0]);
+    //             allSeeds.shift();
+    //             currentData['plant'].push(seedData);
+    //         }
+
+    //         updatedFinalData.push(currentData);
+    //     }
+
+    //     const keychain = window.hive_keychain;
+    //     keychain.requestCustomJson(this.state.userName, 'dcrops', 'Active', JSON.stringify({ operation: "plantMultiple", payload: updatedFinalData }), 'Plant Seeds!', (response) => {
+    //         if (response.success === true) {
+    //             this.setState({
+    //                 finalData: updatedFinalData,
+    //                 userData: this.state.userData.filter(el => !totalNfts.has(el['_id'])),
+    //                 selectedSeeds: {},
+    //                 landData: this.state.landData.filter(el => !totalNfts.has(el['_id'])),
+    //                 seedsToPlant: ''
+    //             });
+    //             this.loadSeeds()
+    //         }
+    //     });
+    // }
 
     render() {
         return (
@@ -299,6 +443,7 @@ class App extends Component {
                                             type="submit"
                                             value='Plant' />
                                         <p>After planting, change the land type to update land data. Otherwise land data may not update!</p>
+                                        <p className="center"><a href="https://discord.gg/wb3AZGcASH" target="_blank">Join Farmer Bot Channel</a></p>
                                     </div>
                                 </div>
                                 <Plant />
@@ -323,7 +468,8 @@ class App extends Component {
                                 <Card title='Garlic' filterData={this.filterData} addSeeds={this.addSeeds} />
                                 <Card title='King Weed' filterData={this.filterData} addSeeds={this.addSeeds} />
                             </div>
-                        </div> : <SignIn loadData={this.loadData} />
+                        </div>
+                        : <SignIn loadData={this.loadData} />
                 }
 
             </div >
