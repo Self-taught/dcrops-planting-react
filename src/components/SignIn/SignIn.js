@@ -16,7 +16,7 @@ class SignIn extends React.Component {
     }
 
     loadData = () => {
-        if (this.state.userName.length > 1 && this.state.userName.length < 15) {
+        if (this.state.userName.length > 1 && this.state.userName.length < 18) {
 
             this.setState({ isLoading: true }, () => {
                 this.props.loadData(this.state.userName)
