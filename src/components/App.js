@@ -319,23 +319,23 @@ class App extends Component {
                                             <p className="w-100 f4 mv1">Select the type of land: </p>
                                             <div className="container mv3">
                                                 <input onClick={this.filterLands} type="radio" id="Hi-Tec Land" name="landType" value="Hi-Tec Land" />
-                                                <label className="w-100 mv1 mh2" htmlFor="Hi-Tec Land">Hi-Tec Land</label><br />
+                                                <p className="w-100 mv1 mh2" htmlFor="Hi-Tec Land">Hi-Tec Land</p><br />
 
                                                 <input onClick={this.filterLands} type="radio" id="Trinity Land" name="landType" value="Trinity Land" />
-                                                <label className="w-100 mv1 mh2" htmlFor="Trinity Land">Trinity Land</label><br />
+                                                <p className="w-100 mv1 mh2" htmlFor="Trinity Land">Trinity Land</p><br />
 
                                                 <input onClick={this.filterLands} type="radio" id="Fairy Garden" name="landType" value="Fairy Garden" />
-                                                <label className="w-100 mv1 mh2" htmlFor="Fairy Garden">Fairy Garden</label><br />
+                                                <p className="w-100 mv1 mh2" htmlFor="Fairy Garden">Fairy Garden</p><br />
                                             </div>
                                             <div className="container mv3">
                                                 <input onClick={this.filterLands} type="radio" id="Awesome Land" name="landType" value="Awesome Land" />
-                                                <label className="w-100 mv1 mh2" htmlFor="Awesome Land">Awesome Land</label><br />
+                                                <p className="w-100 mv1 mh2" htmlFor="Awesome Land">Awesome Land</p><br />
 
                                                 <input onClick={this.filterLands} type="radio" id="Fertile Land" name="landType" value="Fertile Land" />
-                                                <label className="w-100 mv3 mh2" htmlFor="Fertile Land">Fertile Land</label><br />
+                                                <p className="w-100 mv3 mh2" htmlFor="Fertile Land">Fertile Land</p><br />
 
                                                 <input onClick={this.filterLands} type="radio" id="Average Farmland" name="landType" value="Average Farmland" />
-                                                <label className="w-100 mv1 mh2" htmlFor="Average Farmland">Average Farmland</label><br />
+                                                <p className="w-100 mv1 mh2" htmlFor="Average Farmland">Average Farmland</p><br />
                                             </div>
                                             <hr />
 

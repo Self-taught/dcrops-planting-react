@@ -71,7 +71,7 @@ class Card extends Component {
                         <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
                             <legend className="f2 fw6 ph0 mh0">{this.state.title}</legend>
                             <div className="mt3">
-                                <label className="db fw6 lh-copy f6" htmlFor="userName">Number of {this.state.title} Seeds available to plant : {this.state.numberAvailable}</label>
+                                <p className="db fw6 lh-copy f6" htmlFor="userName">Number of {this.state.title} Seeds available to plant : {this.state.numberAvailable}</p>
                             </div>
                             <div className="mt3 log-in-button">
                                 {

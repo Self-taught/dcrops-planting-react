@@ -32,7 +32,7 @@ class SignIn extends React.Component {
                         <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
                             <legend className="f1 fw6 ph0 mh0">Load Data</legend>
                             <div className="mt3">
-                                <label className="db fw6 lh-copy f6" htmlFor="userName">UserName</label>
+                                <p className="db fw6 lh-copy f6" htmlFor="userName">UserName</p>
                                 <input
                                     onChange={this.onUserNameChange}
                                     className="pa2 input-reset ba bg-transparent Black w-100"
