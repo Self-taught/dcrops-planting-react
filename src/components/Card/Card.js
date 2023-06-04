@@ -82,7 +82,7 @@ class Card extends Component {
                                             }, () => { this.setState({ numberAvailable: this.state.seedArray.length }) })
 
                                         }}
-                                        className="pa2 input-reset ba bg-black hover-bg-black white w-100"
+                                        className="pa2 input-reset ba bg-black hover-bg-black white w-100 br3"
                                         type="submit"
                                         name="userName"
                                         value="Load Data"
@@ -92,7 +92,7 @@ class Card extends Component {
                                             <div>
                                                 <input
                                                     onClick={this.addOne}
-                                                    className="pa2 input-reset ba bg-green hover-bg-dark-green white w-50"
+                                                    className="pa2 input-reset ba bg-green hover-bg-dark-green white w-50 br3"
                                                     type="submit"
                                                     name="select"
                                                     value="+ 1"
@@ -125,7 +125,7 @@ class Card extends Component {
                                                             selectedSeedArray: []
                                                         }, () => { this.setState({ numberAvailable: this.state.seedArray.length }) })
                                                     }}
-                                                    className="pa2 input-reset ba bg-purple hover-bg-purple white w-100"
+                                                    className="pa2 input-reset ba bg-purple hover-bg-purple white w-100 br3"
                                                     type="submit"
                                                     name="userName"
                                                     value="Reset Data"
@@ -141,7 +141,7 @@ class Card extends Component {
                                                         }, () => { this.setState({ numberAvailable: this.state.seedArray.length }) })
 
                                                     }}
-                                                    className="pa2 input-reset ba bg-black hover-bg-black white w-100"
+                                                    className="pa2 input-reset ba bg-black hover-bg-black white w-100 br3"
                                                     type="submit"
                                                     name="userName"
                                                     value="Load Data Again"

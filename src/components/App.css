@@ -2,3 +2,11 @@
     margin: 0 10%;
     display: flex;
 }
+
+.link {
+    text-decoration: none;
+}
+
+.button-link {
+    width: 25%;
+}

@@ -3,9 +3,15 @@ import { Component } from "react";
 import SignIn from "./SignIn/SignIn";
 import Plant from "./Plant/Plant";
 import Card from "./Card/Card";
+import AutoPlant from "./AutoPlant/AutoPlant";
 import axios from "axios";
 import 'tachyons';
-import './App.css'
+import './App.css';
+
+const seedTypes = [['Egg Plant', 'Strawberry', 'Ginger', 'Potato', 'Cauliflower', 'Broccoli', 'Kale', 'French Bean', 'Tulip', 'Rosemary', 'Dill'], ['1'],
+['Sunflower', 'Sweet Potato', 'King Weed', 'Raspberry', 'Beetroot', 'Hot Pepper', 'Pumpkin', 'Lavender', 'Hops', 'Garlic', 'Carrot', 'Thyme', 'Sage'],
+['Napa Cabbage', 'Sweet Potato', 'Bell Pepper', 'King Weed', 'Leek', 'Onion', 'Cabbage', 'Radish', 'Peas', 'White Rose', 'Kidney Beans', 'Cilantro', 'Parsley']
+];
 
 
 class App extends Component {
@@ -14,6 +20,7 @@ class App extends Component {
         this.state = {
             userName: "",
             userData: [],
+            currentSeeds: [],
             selectedSeeds: {},
             seedsToPlant: '',
             maxNfts: 0,
@@ -25,6 +32,41 @@ class App extends Component {
         this.loadData = this.loadData.bind(this)
         this.filterData = this.filterSeeds.bind(this)
         this.addSeeds = this.addSeeds.bind(this)
+        this.autoPlantSeeds = this.autoPlantSeeds.bind(this)
+    }
+
+    getCurrentSeason = async () => {
+        const url = 'https://api.hive-engine.com/rpc/contracts';
+        const params = {
+            contract: 'nft',
+            table: 'DCROPSinstances',
+            query: {
+                _id: 1
+            },
+            limit: 1000,
+            offset: 0,
+            indexes: []
+        };
+        const j = {
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'find',
+            params: params
+        };
+
+        try {
+            const response = await axios.post(url, j);
+            const data = response.data;
+
+            return data.result[0]['properties']['primary'];
+        } catch (error) {
+            return []; // Return an empty array or handle the error according to your requirements
+        }
+    }
+
+    componentDidMount() {
+        this.getCurrentSeason()
+            .then(response => this.setState({ currentSeeds: seedTypes[response] }));
     }
 
     findMultiple = async (user_name, offset) => {
@@ -56,7 +98,6 @@ class App extends Component {
 
             return data.result;
         } catch (error) {
-            console.error(error);
             return []; // Return an empty array or handle the error according to your requirements
         }
     }
@@ -85,22 +126,21 @@ class App extends Component {
             });
             const availableSeeds = totalSeeds.filter(el => {
                 const timestamp = JSON.parse(el.properties.secondary)
-                function getDaysDifference(timestamp) {
-                    const oneDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+                function getHoursDifference(timestamp) {
+                    const hoursPassed = 60 * 60 * 1000; // Number of milliseconds in a day
 
                     const currentDate = new Date();
                     const targetDate = new Date(timestamp * 1000); // Multiply by 1000 to convert seconds to milliseconds
 
                     const diffInMilliseconds = Math.abs(currentDate - targetDate);
-                    const diffInDays = Math.round(diffInMilliseconds / oneDay);
-
-                    return diffInDays;
+                    const diffInHours = Math.round(diffInMilliseconds / hoursPassed);
+                    return diffInHours;
                 }
 
                 // Example usage
                 const targetTimestamp = timestamp['cd'];
-                const daysDifference = getDaysDifference(targetTimestamp);
-                return daysDifference >= 14;
+                const daysDifference = getHoursDifference(targetTimestamp);
+                return daysDifference > 336;
             })
             const availableSeedIds = availableSeeds.map(el => el['_id'])
             return availableSeedIds;
@@ -239,6 +279,8 @@ class App extends Component {
             updatedFinalData.push(currentData);
         }
 
+
+
         const keychain = window.hive_keychain;
         keychain.requestCustomJson(this.state.userName, 'dcrops', 'Active', JSON.stringify({ operation: "plantMultiple", payload: updatedFinalData }), 'Plant Seeds!', (response) => {
             if (response.success === true) {
@@ -249,155 +291,15 @@ class App extends Component {
                     landData: this.state.landData.filter(el => !totalNfts.has(el['_id'])),
                     seedsToPlant: ''
                 });
+
                 this.loadSeeds()
             }
         });
     };
 
-    // Test Auto Planting Stuff
-
-    // filterEmptyLands = () => {
-    //     const validLandTypes = [
-    //         'Fairy Garden',
-    //         'Hi-Tec Land',
-    //         'Awesome Land',
-    //         'Trinity Land',
-    //         'Fertile Land',
-    //         'Average Farmland'
-    //     ];
-
-    //     const totalLands = this.state.userData.filter(el => validLandTypes.includes(el.properties.name));
-
-
-    //     const emptyLands = [];
-    //     let totalEmptyPlots = 0;
-
-    //     totalLands.forEach(land => {
-    //         const plots = JSON.parse(land.properties.secondary)
-    //         const emptyPlotArray = [];
-    //         let foundPlot = null;
-    //         plots['p'].forEach((el, i) => {
-    //             if (el === "") {
-    //                 totalEmptyPlots += 1;
-
-    //                 if (!foundPlot) {
-    //                     foundPlot = {
-    //                         landId: land['_id'],
-    //                         emptyPlots: []
-    //                     }
-    //                 }
-    //                 emptyPlotArray.push(i)
-    //             }
-    //         });
-
-    //         if (foundPlot) {
-    //             foundPlot.emptyPlots = emptyPlotArray;
-    //             emptyLands.push(foundPlot)
-    //         }
-    //     })
-
-    //     return emptyLands;
-    //     // this.setState({
-    //     //     totalLand: totalLands.length,
-    //     //     totalPlots: totalEmptyPlots,
-    //     //     landData: emptyLands
-    //     // });
-    // }
-
-    // filterPlantableSeeds = () => {
-    //     const seedTypes = ['Sunflower', 'King Weed', 'Raspberry', 'Sweet Potato', 'Beetroot', 'Hot Pepper', 'Pumpkin', 'Lavender', 'Hops', 'Garlic', 'Carrot', 'Thyme', 'Sage'];
-
-    //     if (this.state.userData.length > 0) {
-    //         const totalSeeds = this.state.userData.filter(el => seedTypes.includes(el.properties.name));
-
-    //         const availableSeeds = totalSeeds.filter(el => {
-    //             const timestamp = JSON.parse(el.properties.secondary)
-    //             function getDaysDifference(timestamp) {
-    //                 const oneDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
-
-    //                 const currentDate = new Date();
-    //                 const targetDate = new Date(timestamp * 1000); // Multiply by 1000 to convert seconds to milliseconds
-
-    //                 const diffInMilliseconds = Math.abs(currentDate - targetDate);
-    //                 const diffInDays = Math.round(diffInMilliseconds / oneDay);
-
-    //                 return diffInDays;
-    //             }
-
-    //             // Example usage
-    //             const targetTimestamp = timestamp['cd'];
-    //             const daysDifference = getDaysDifference(targetTimestamp);
-    //             return daysDifference >= 14;
-    //         })
-    //         // const availableSeedIds = availableSeeds.map(el => el['_id'])
-    //         return availableSeeds;
-    //     } else {
-    //         return 0;
-    //     }
-    // }
-
-    // autoPlantSeeds = () => {
-    //     // Find all empty Lands
-    //     // Find plantable seeds
-    //     const emptyLands = this.filterEmptyLands()
-    //     const totalAvaliableSeeds = this.filterPlantableSeeds()
-
-    //     if (totalAvaliableSeeds.length < 1) {
-    //         return;
-    //     }
-    //     if (emptyLands.length < 1) {
-    //         return;
-    //     }
-
-    //     // const updatedFinalData = [...finalData];
-    //     const updatedFinalData = [];
-    //     const totalNfts = new Set();
-
-    //     for (let i = 0; i < landData.length && totalNfts.size < 48; i++) {
-    //         const el = landData[i];
-    //         const currentData = {
-    //             landID: el['landId'],
-    //             plant: []
-    //         };
-    //         if (!allSeeds.length) {
-    //             break;
-    //         }
-    //         totalNfts.add(el['landId']);
-
-    //         for (let j = 0; j < el['emptyPlots'].length && totalNfts.size < 48; j++) {
-    //             const p = el['emptyPlots'][j];
-
-    //             if (!allSeeds.length) {
-    //                 break;
-    //             }
-
-    //             const seedData = {
-    //                 seedID: allSeeds[0] || null,
-    //                 plotNo: p
-    //             };
-
-    //             totalNfts.add(allSeeds[0]);
-    //             allSeeds.shift();
-    //             currentData['plant'].push(seedData);
-    //         }
-
-    //         updatedFinalData.push(currentData);
-    //     }
-
-    //     const keychain = window.hive_keychain;
-    //     keychain.requestCustomJson(this.state.userName, 'dcrops', 'Active', JSON.stringify({ operation: "plantMultiple", payload: updatedFinalData }), 'Plant Seeds!', (response) => {
-    //         if (response.success === true) {
-    //             this.setState({
-    //                 finalData: updatedFinalData,
-    //                 userData: this.state.userData.filter(el => !totalNfts.has(el['_id'])),
-    //                 selectedSeeds: {},
-    //                 landData: this.state.landData.filter(el => !totalNfts.has(el['_id'])),
-    //                 seedsToPlant: ''
-    //             });
-    //             this.loadSeeds()
-    //         }
-    //     });
-    // }
+    autoPlantSeeds = (set) => {
+        this.setState({ userData: this.state.userData.filter(el => !set.has(el['_id'])) }, () => console.log("Updated after one autoplant:", this.state.userData.length))
+    }
 
     render() {
         return (
@@ -405,68 +307,89 @@ class App extends Component {
                 {
                     this.state.userData.length > 0 ?
                         <div>
-                            <div className="br3 ba near-black mv4 w-100 w-60-m w-60-l shadow-5 mw6 center">
-                                <div className="black pa4">
-                                    <legend className="f2 fw6 ph0 mh0">Welcome {this.state.userName}</legend>
-                                    <p>Max Seeds: 40</p>
-                                    <p>Current total seeds: {this.state.maxNfts}</p>
-                                    <ul>{this.state.seedsToPlant}</ul>
-                                    <hr />
-                                    <div className="mv2">
-                                        <p className="w-100 f4 mv1">Select the type of land: </p>
-                                        <div className="container mv3">
-                                            <input onClick={this.filterLands} type="radio" id="Hi-Tec Land" name="landType" value="Hi-Tec Land" />
-                                            <label className="w-100 mv1 mh2" htmlFor="Hi-Tec Land">Hi-Tec Land</label><br />
-
-                                            <input onClick={this.filterLands} type="radio" id="Trinity Land" name="landType" value="Trinity Land" />
-                                            <label className="w-100 mv1 mh2" htmlFor="Trinity Land">Trinity Land</label><br />
-
-                                            <input onClick={this.filterLands} type="radio" id="Fairy Garden" name="landType" value="Fairy Garden" />
-                                            <label className="w-100 mv1 mh2" htmlFor="Fairy Garden">Fairy Garden</label><br />
-                                        </div>
-                                        <div className="container mv3">
-                                            <input onClick={this.filterLands} type="radio" id="Awesome Land" name="landType" value="Awesome Land" />
-                                            <label className="w-100 mv1 mh2" htmlFor="Awesome Land">Awesome Land</label><br />
-
-                                            <input onClick={this.filterLands} type="radio" id="Fertile Land" name="landType" value="Fertile Land" />
-                                            <label className="w-100 mv3 mh2" htmlFor="Fertile Land">Fertile Land</label><br />
-
-                                            <input onClick={this.filterLands} type="radio" id="Average Farmland" name="landType" value="Average Farmland" />
-                                            <label className="w-100 mv1 mh2" htmlFor="Average Farmland">Average Farmland</label><br />
-                                        </div>
+                            <div className="container">
+                                <div className="br3 ba near-black mv4 w-100 w-65-m w-65-l shadow-5 mw6 center">
+                                    <div className="black pa4">
+                                        <legend className="f2 fw6 ph0 mh0">Welcome {this.state.userName}</legend>
+                                        <p>Max Seeds: 40</p>
+                                        <p>Current total seeds: {this.state.maxNfts}</p>
+                                        <ul>{this.state.seedsToPlant}</ul>
                                         <hr />
+                                        <div className="mv2">
+                                            <p className="w-100 f4 mv1">Select the type of land: </p>
+                                            <div className="container mv3">
+                                                <input onClick={this.filterLands} type="radio" id="Hi-Tec Land" name="landType" value="Hi-Tec Land" />
+                                                <label className="w-100 mv1 mh2" htmlFor="Hi-Tec Land">Hi-Tec Land</label><br />
 
-                                        <p>Total Plots Available to plant: {this.state.totalPlots}</p>
-                                        <input
-                                            onClick={this.plantSeeds}
-                                            className="pa2 w-35 bg-green br3 center"
-                                            type="submit"
-                                            value='Plant' />
-                                        <p>After planting, change the land type to update land data. Otherwise land data may not update!</p>
-                                        <p className="center"><a href="https://discord.gg/wb3AZGcASH" target="_blank">Join Farmer Bot Channel</a></p>
+                                                <input onClick={this.filterLands} type="radio" id="Trinity Land" name="landType" value="Trinity Land" />
+                                                <label className="w-100 mv1 mh2" htmlFor="Trinity Land">Trinity Land</label><br />
+
+                                                <input onClick={this.filterLands} type="radio" id="Fairy Garden" name="landType" value="Fairy Garden" />
+                                                <label className="w-100 mv1 mh2" htmlFor="Fairy Garden">Fairy Garden</label><br />
+                                            </div>
+                                            <div className="container mv3">
+                                                <input onClick={this.filterLands} type="radio" id="Awesome Land" name="landType" value="Awesome Land" />
+                                                <label className="w-100 mv1 mh2" htmlFor="Awesome Land">Awesome Land</label><br />
+
+                                                <input onClick={this.filterLands} type="radio" id="Fertile Land" name="landType" value="Fertile Land" />
+                                                <label className="w-100 mv3 mh2" htmlFor="Fertile Land">Fertile Land</label><br />
+
+                                                <input onClick={this.filterLands} type="radio" id="Average Farmland" name="landType" value="Average Farmland" />
+                                                <label className="w-100 mv1 mh2" htmlFor="Average Farmland">Average Farmland</label><br />
+                                            </div>
+                                            <hr />
+
+                                            <p>Total Plots Available to plant: {this.state.totalPlots}</p>
+                                            <input
+                                                onClick={this.plantSeeds}
+                                                className="pa2 w-35 bg-green br3 center pointer ph4 grow"
+                                                type="submit"
+                                                value='Plant' />
+                                            <p>After planting, change the land type to update land data. Otherwise land data may not update!</p>
+                                        </div>
                                     </div>
+                                    <Plant />
                                 </div>
-                                <Plant />
                             </div>
-                            <div className="container">
-                                <Card title='Sweet Potato' filterData={this.filterData} addSeeds={this.addSeeds} />
-                                <Card title='Hot Pepper' filterData={this.filterData} addSeeds={this.addSeeds} />
-                                <Card title='Hops' filterData={this.filterData} addSeeds={this.addSeeds} />
+                            <div>
+                                {this.state.currentSeeds.reduce((containerArray, seed, index) => {
+                                    if (index % 3 === 0) {
+                                        containerArray.push([]);
+                                    }
+                                    containerArray[Math.floor(index / 3)].push(seed);
+                                    return containerArray;
+                                }, []).map((seedGroup, index) => (
+                                    <div className="container" key={index}>
+                                        {seedGroup.map((seed) => (
+                                            <Card title={seed} filterData={this.filterData} addSeeds={this.addSeeds} key={seed} />
+                                        ))}
+                                    </div>
+                                ))}
                             </div>
-                            <div className="container">
-                                <Card title='Lavender' filterData={this.filterData} addSeeds={this.addSeeds} />
-                                <Card title='Sage' filterData={this.filterData} addSeeds={this.addSeeds} />
-                                <Card title='Thyme' filterData={this.filterData} addSeeds={this.addSeeds} />
-                            </div>
-                            <div className="container">
-                                <Card title='Raspberry' filterData={this.filterData} addSeeds={this.addSeeds} />
-                                <Card title='Beetroot' filterData={this.filterData} addSeeds={this.addSeeds} />
-                                <Card title='Pumpkin' filterData={this.filterData} addSeeds={this.addSeeds} />
-                            </div>
-                            <div className="container">
-                                <Card title='Carrot' filterData={this.filterData} addSeeds={this.addSeeds} />
-                                <Card title='Garlic' filterData={this.filterData} addSeeds={this.addSeeds} />
-                                <Card title='King Weed' filterData={this.filterData} addSeeds={this.addSeeds} />
+                            <hr />
+                            <div>
+                                <p className="f1 bg-gold br3 ba tc pa3 near-black mv4 w-100 w-80-m w-80-l shadow-5 center">Other Features/Apps</p>
+                                <div className="bg-washed-blue br3 ba pa3 near-black mv4 w-100 w-80-m w-80-l shadow-5 center">
+                                    <p className="f3 tc">Farming Bot</p>
+                                    <hr />
+                                    <ul>
+                                        <li>Check when your crops will be ready to harvest.
+                                        </li>
+                                        <li>
+                                            Check when your craft/cooking items will be ready to claim.
+                                        </li>
+                                        <li>
+                                            Set alerts for your cooking/crafting items. Farming bot will alert you (send message on discord) when your items will be ready.
+                                        </li>
+                                    </ul>
+                                    <a className="white link button-link ba br3 bg-light-purple tc pa2 near-black mv2 w-35-ns w-35-l grow pointer ml3" href="https://discord.gg/wb3AZGcASH" target="_blank">Join Farmer Bot</a>
+                                </div>
+                                <AutoPlant
+                                    allData={this.state.userData}
+                                    userName={this.state.userName}
+                                    autoPlantSeeds={this.autoPlantSeeds}
+                                    currentSeeds={this.state.currentSeeds}
+                                />
                             </div>
                         </div>
                         : <SignIn loadData={this.loadData} />
