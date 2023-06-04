@@ -99,21 +99,21 @@ class Card extends Component {
                                                 />
                                                 <input
                                                     onClick={this.addTen}
-                                                    className="pa2 input-reset ba bg-green hover-bg-dark-green white w-50"
+                                                    className="pa2 input-reset ba bg-green hover-bg-dark-green white w-50 br3"
                                                     type="submit"
                                                     name="select"
                                                     value="+ 10"
                                                 />
                                                 <input
                                                     onClick={this.removeOne}
-                                                    className="pa2 input-reset ba bg-red hover-bg-dark-red white w-50"
+                                                    className="pa2 input-reset ba bg-red hover-bg-dark-red white w-50 br3"
                                                     type="submit"
                                                     name="select"
                                                     value="- 1"
                                                 />
                                                 <input
                                                     onClick={this.removeTen}
-                                                    className="pa2 input-reset ba bg-red hover-bg-dark-red white w-50"
+                                                    className="pa2 input-reset ba bg-red hover-bg-dark-red white w-50 br3"
                                                     type="submit"
                                                     name="select"
                                                     value="- 10"
