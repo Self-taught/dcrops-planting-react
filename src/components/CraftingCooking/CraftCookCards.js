@@ -18,14 +18,9 @@ const CraftCookCards = (props) => {
     }
 
     const clickHandler = () => {
-        console.log(itemList)
-        console.log(availableEquipment)
         if (!equipmentToUse && availableEquipment.length > 0) {
             equipmentToUse = availableEquipment[0]._id;
-            console.log(equipmentToUse)
-        } else {
-            console.log(equipmentToUse)
-        };
+        }
 
         const ings = [];
         const itemSet = new Set();
@@ -45,90 +40,6 @@ const CraftCookCards = (props) => {
             eq: equipmentToUse,
             ings: ings
         }]
-
-        console.log(payload);
-
-        // ACCOUNT
-        // @looftee
-        // KEY
-        // Active
-        // ID
-        // dcrops
-        // DATA(CLICK TO SHOW)
-        // {
-        //     "recipe": "Oil",
-        //         "recipeIndex": 0,
-        //             "operation": "itemCraft",
-        //                 "payload": [
-        //                     {
-        //                         "eq": 250476,
-        //                         "ings": [
-        //                             "crop,70aac5e1-ede9-4476-ac76-7385df5d26cd"
-        //                         ]
-        //                     }
-        //                 ],
-        //                     "noToCraft": "1"
-        // }
-
-        // @looftee
-        // KEY
-        // Active
-        // ID
-        // dcrops
-        // DATA(CLICK TO SHOW)
-        // {
-        //     "recipe": "Oil",
-        //         "recipeIndex": 0,
-        //             "operation": "itemCraft",
-        //                 "payload": [
-        //                     {
-        //                         "eq": 250476,
-        //                         "ings": [
-        //                             "crop,70aac5e1-ede9-4476-ac76-7385df5d26cd"
-        //                         ]
-        //                     }
-        //                 ],
-        //                     "noToCraft": "1"
-        // }
-
-        // {
-        //     "recipe": "Cabbage Pickle",
-        //     "recipeIndex": 0,
-        //     "operation": "itemCraft",
-        //     "payload": [
-        //        {
-        //           "eq": 248111,
-        //           "ings": [
-        //              "crop,1c990802-6ae4-45fb-a3c7-fcc2b540428d",
-        //              "crop,1d83389c-c514-4d29-8982-7aa332de13db",
-        //              "craft,c2a17f86-f12e-4ec7-aeb1-6e8f081ce21d",
-        //              "crop,30d9ffda-405a-488c-94bf-cd3b793e6203",
-        //              "craft,21ecfd5a-6cc5-44eb-86af-128f7ac9dde7"
-        //           ]
-        //        }
-        //     ],
-        //     "noToCraft": "1"
-        //  }
-
-        // Cooking Data
-
-        //     "recipe": "Eggplant Burger",
-        //         "operation": "initCook",
-        //             "payload": [
-        //                 {
-        //                     "eq": 247844,
-        //                     "ings": [
-        //                         "crop,4836ec4e-13bf-47cc-ab1c-e92d10b41dbd",
-        //                         "crop,d2812671-4a20-458b-9df1-1f50bdf1a700",
-        //                         "crop,ad658486-2868-4ec6-8dd3-253c2427dd29",
-        //                         "crop,27da01a1-760c-43a5-b77f-bb38ff1cbc96",
-        //                         "craft,21ecfd5a-6cc5-44eb-86af-128f7ac9dde7",
-        //                         "craft,e5795d93-e325-4fea-a8bc-c1a0802e2d4e"
-        //                     ]
-        //                 }
-        //             ],
-        //                 "noToCraft": "1"
-        // }
 
         const keychain = window.hive_keychain;
         keychain.requestCustomJson(props.userName, 'dcrops', 'Active', JSON.stringify({

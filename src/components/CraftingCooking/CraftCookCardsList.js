@@ -35,8 +35,6 @@ const CraftCookCardsList = (props) => {
             const updatedState = prevState.filter(el => !itemSet.has(el._id));
             return updatedState;
         });
-        console.log(itemsAvailable)
-        console.log(itemSet)
     }
 
     return (
