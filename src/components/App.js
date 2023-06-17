@@ -7,6 +7,8 @@ import AutoPlant from "./AutoPlant/AutoPlant";
 import axios from "axios";
 import 'tachyons';
 import './App.css';
+import CraftCook from "./CraftingCooking/CraftCook";
+import NavBar from "./NavBar/NavBar";
 
 const seedTypes = [['Egg Plant', 'Strawberry', 'Ginger', 'Potato', 'Cauliflower', 'Broccoli', 'Kale', 'French Bean', 'Tulip', 'Rosemary', 'Dill'], ['1'],
 ['Sunflower', 'Sweet Potato', 'King Weed', 'Raspberry', 'Beetroot', 'Hot Pepper', 'Pumpkin', 'Lavender', 'Hops', 'Garlic', 'Carrot', 'Thyme', 'Sage'],
@@ -27,12 +29,14 @@ class App extends Component {
             totalLand: 'Loading...',
             totalPlots: 'Loading...',
             landData: [],
-            finalData: []
+            finalData: [],
+            planting: true
         }
         this.loadData = this.loadData.bind(this)
         this.filterData = this.filterSeeds.bind(this)
         this.addSeeds = this.addSeeds.bind(this)
         this.autoPlantSeeds = this.autoPlantSeeds.bind(this)
+        this.setNav = this.setNav.bind(this)
     }
 
     getCurrentSeason = async () => {
@@ -60,7 +64,7 @@ class App extends Component {
 
             return data.result[0]['properties']['primary'];
         } catch (error) {
-            return []; // Return an empty array or handle the error according to your requirements
+            return [];
         }
     }
 
@@ -110,6 +114,10 @@ class App extends Component {
                 this.setState({ userData: response, userName: response[0]['account'] })
             }
         })
+    }
+
+    setNav = (state) => {
+        this.setState({ planting: state }, () => console.log(this.state.planting))
     }
 
     filterSeeds = (title) => {
@@ -307,90 +315,102 @@ class App extends Component {
                 {
                     this.state.userData.length > 0 ?
                         <div>
-                            <div className="container">
-                                <div className="br3 ba near-black mv4 w-100 w-65-m w-65-l shadow-5 mw6 center">
-                                    <div className="black pa4">
-                                        <legend className="f2 fw6 ph0 mh0">Welcome {this.state.userName}</legend>
-                                        <p>Max Seeds: 40</p>
-                                        <p>Current total seeds: {this.state.maxNfts}</p>
-                                        <ul>{this.state.seedsToPlant}</ul>
-                                        <hr />
-                                        <div className="mv2">
-                                            <p className="w-100 f4 mv1">Select the type of land: </p>
-                                            <div className="container mv3">
-                                                <input onClick={this.filterLands} type="radio" id="Hi-Tec Land" name="landType" value="Hi-Tec Land" />
-                                                <p className="w-100 mv1 mh2" htmlFor="Hi-Tec Land">Hi-Tec Land</p><br />
+                            <NavBar
+                                setNav={this.setNav}
+                                selectedNav={this.state.planting}
+                            />
+                            {this.state.planting ?
+                                <div>
+                                    <div className="container">
+                                        <div className="welcome-screen br3 ba near-black mv5 w-100 w-65-m w-65-l shadow-5 mw6 center">
+                                            <div className="black pa4">
+                                                <legend className="f2 fw6 ph0 mh0">Welcome {this.state.userName}</legend>
+                                                <p>Max Seeds: 40</p>
+                                                <p>Current total seeds: {this.state.maxNfts}</p>
+                                                <ul>{this.state.seedsToPlant}</ul>
+                                                <hr />
+                                                <div className="mv2">
+                                                    <p className="w-100 f4 mv1">Select the type of land: </p>
+                                                    <div className="container mv3">
+                                                        <input onClick={this.filterLands} type="radio" id="Hi-Tec Land" name="landType" value="Hi-Tec Land" />
+                                                        <p className="w-100 mv1 mh2" htmlFor="Hi-Tec Land">Hi-Tec Land</p><br />
 
-                                                <input onClick={this.filterLands} type="radio" id="Trinity Land" name="landType" value="Trinity Land" />
-                                                <p className="w-100 mv1 mh2" htmlFor="Trinity Land">Trinity Land</p><br />
+                                                        <input onClick={this.filterLands} type="radio" id="Trinity Land" name="landType" value="Trinity Land" />
+                                                        <p className="w-100 mv1 mh2" htmlFor="Trinity Land">Trinity Land</p><br />
 
-                                                <input onClick={this.filterLands} type="radio" id="Fairy Garden" name="landType" value="Fairy Garden" />
-                                                <p className="w-100 mv1 mh2" htmlFor="Fairy Garden">Fairy Garden</p><br />
+                                                        <input onClick={this.filterLands} type="radio" id="Fairy Garden" name="landType" value="Fairy Garden" />
+                                                        <p className="w-100 mv1 mh2" htmlFor="Fairy Garden">Fairy Garden</p><br />
+                                                    </div>
+                                                    <div className="container mv3">
+                                                        <input onClick={this.filterLands} type="radio" id="Awesome Land" name="landType" value="Awesome Land" />
+                                                        <p className="w-100 mv1 mh2" htmlFor="Awesome Land">Awesome Land</p><br />
+
+                                                        <input onClick={this.filterLands} type="radio" id="Fertile Land" name="landType" value="Fertile Land" />
+                                                        <p className="w-100 mv3 mh2" htmlFor="Fertile Land">Fertile Land</p><br />
+
+                                                        <input onClick={this.filterLands} type="radio" id="Average Farmland" name="landType" value="Average Farmland" />
+                                                        <p className="w-100 mv1 mh2" htmlFor="Average Farmland">Average Farmland</p><br />
+                                                    </div>
+                                                    <hr />
+
+                                                    <p>Total Plots Available to plant: {this.state.totalPlots}</p>
+                                                    <input
+                                                        onClick={this.plantSeeds}
+                                                        className="pa2 w-35 bg-green br3 center pointer ph4 grow"
+                                                        type="submit"
+                                                        value='Plant' />
+                                                    <p>After planting, change the land type to update land data. Otherwise land data may not update!</p>
+                                                </div>
                                             </div>
-                                            <div className="container mv3">
-                                                <input onClick={this.filterLands} type="radio" id="Awesome Land" name="landType" value="Awesome Land" />
-                                                <p className="w-100 mv1 mh2" htmlFor="Awesome Land">Awesome Land</p><br />
-
-                                                <input onClick={this.filterLands} type="radio" id="Fertile Land" name="landType" value="Fertile Land" />
-                                                <p className="w-100 mv3 mh2" htmlFor="Fertile Land">Fertile Land</p><br />
-
-                                                <input onClick={this.filterLands} type="radio" id="Average Farmland" name="landType" value="Average Farmland" />
-                                                <p className="w-100 mv1 mh2" htmlFor="Average Farmland">Average Farmland</p><br />
-                                            </div>
-                                            <hr />
-
-                                            <p>Total Plots Available to plant: {this.state.totalPlots}</p>
-                                            <input
-                                                onClick={this.plantSeeds}
-                                                className="pa2 w-35 bg-green br3 center pointer ph4 grow"
-                                                type="submit"
-                                                value='Plant' />
-                                            <p>After planting, change the land type to update land data. Otherwise land data may not update!</p>
+                                            <Plant />
                                         </div>
                                     </div>
-                                    <Plant />
-                                </div>
-                            </div>
-                            <div>
-                                {this.state.currentSeeds.reduce((containerArray, seed, index) => {
-                                    if (index % 3 === 0) {
-                                        containerArray.push([]);
-                                    }
-                                    containerArray[Math.floor(index / 3)].push(seed);
-                                    return containerArray;
-                                }, []).map((seedGroup, index) => (
-                                    <div className="container" key={index}>
-                                        {seedGroup.map((seed) => (
-                                            <Card title={seed} filterData={this.filterData} addSeeds={this.addSeeds} key={seed} />
+                                    <div>
+                                        {this.state.currentSeeds.reduce((containerArray, seed, index) => {
+                                            if (index % 3 === 0) {
+                                                containerArray.push([]);
+                                            }
+                                            containerArray[Math.floor(index / 3)].push(seed);
+                                            return containerArray;
+                                        }, []).map((seedGroup, index) => (
+                                            <div className="container" key={index}>
+                                                {seedGroup.map((seed) => (
+                                                    <Card title={seed} filterData={this.filterData} addSeeds={this.addSeeds} key={seed} />
+                                                ))}
+                                            </div>
                                         ))}
                                     </div>
-                                ))}
-                            </div>
-                            <hr />
-                            <div>
-                                <p className="f1 bg-gold br3 ba tc pa3 near-black mv4 w-100 w-80-m w-80-l shadow-5 center">Other Features/Apps</p>
-                                <div className="bg-washed-blue br3 ba pa3 near-black mv4 w-100 w-80-m w-80-l shadow-5 center">
-                                    <p className="f3 tc">Farming Bot</p>
                                     <hr />
-                                    <ul>
-                                        <li>Check when your crops will be ready to harvest.
-                                        </li>
-                                        <li>
-                                            Check when your craft/cooking items will be ready to claim.
-                                        </li>
-                                        <li>
-                                            Set alerts for your cooking/crafting items. Farming bot will alert you (send message on discord) when your items will be ready.
-                                        </li>
-                                    </ul>
-                                    <a className="white link button-link ba br3 bg-light-purple tc pa2 near-black mv2 w-35-ns w-35-l grow pointer ml3" href="https://discord.gg/wb3AZGcASH" target="_blank">Join Farmer Bot</a>
+                                    <div>
+                                        <p className="f1 bg-gold br3 ba tc pa3 near-black mv4 w-100 w-80-m w-80-l shadow-5 center">Other Features/Apps</p>
+                                        <div className="bg-washed-blue br3 ba pa3 near-black mv4 w-100 w-80-m w-80-l shadow-5 center">
+                                            <p className="f3 tc">Farming Bot</p>
+                                            <hr />
+                                            <ul>
+                                                <li>Check when your crops will be ready to harvest.
+                                                </li>
+                                                <li>
+                                                    Check when your craft/cooking items will be ready to claim.
+                                                </li>
+                                                <li>
+                                                    Set alerts for your cooking/crafting items. Farming bot will alert you (send message on discord) when your items will be ready.
+                                                </li>
+                                            </ul>
+                                            <a className="white link button-link ba br3 bg-light-purple tc pa2 near-black mv2 w-35-ns w-35-l grow pointer ml3" href="https://discord.gg/wb3AZGcASH" target="_blank">Join Farmer Bot</a>
+                                        </div>
+                                        <AutoPlant
+                                            allData={this.state.userData}
+                                            userName={this.state.userName}
+                                            autoPlantSeeds={this.autoPlantSeeds}
+                                            currentSeeds={this.state.currentSeeds}
+                                        />
+                                    </div>
                                 </div>
-                                <AutoPlant
+                                :
+                                <CraftCook
                                     allData={this.state.userData}
                                     userName={this.state.userName}
-                                    autoPlantSeeds={this.autoPlantSeeds}
-                                    currentSeeds={this.state.currentSeeds}
-                                />
-                            </div>
+                                />}
                         </div>
                         : <SignIn loadData={this.loadData} />
                 }
