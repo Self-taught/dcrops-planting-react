@@ -10,7 +10,8 @@ import './App.css';
 import CraftCook from "./CraftingCooking/CraftCook";
 import NavBar from "./NavBar/NavBar";
 
-const seedTypes = [['Eggplant', 'Strawberry', 'Ginger', 'King Weed', 'Potato', 'Cauliflower', 'Broccoli', 'Kale', 'French Beans', 'Tulip', 'Rosemary', 'Dill'], ['1'],
+const seedTypes = [['Napa Cabbage', 'Eggplant', 'Strawberry', 'Ginger', 'King Weed', 'Potato', 'Cauliflower', 'Broccoli', 'Kale', 'French Beans', 'Tulip', 'Rosemary', 'Dill'],
+['Eggplant', 'Sunflower', 'Blueberry', 'King Weed', 'Rice', 'Cucumber', 'Tomato', 'Watermelon', 'Wheat', 'Turnip', 'Chamomile', 'Basil', 'Oregano'],
 ['Sunflower', 'Sweet Potato', 'King Weed', 'Raspberry', 'Beetroot', 'Hot Pepper', 'Pumpkin', 'Lavender', 'Hops', 'Garlic', 'Carrot', 'Thyme', 'Sage'],
 ['Napa Cabbage', 'Sweet Potato', 'Bell Pepper', 'King Weed', 'Leek', 'Onion', 'Cabbage', 'Radish', 'Peas', 'White Rose', 'Kidney Beans', 'Cilantro', 'Parsley']
 ];
