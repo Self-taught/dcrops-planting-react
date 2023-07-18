@@ -17,7 +17,7 @@ const seedTypes = [['Napa Cabbage', 'Eggplant', 'Strawberry', 'Ginger', 'King We
 ['Napa Cabbage', 'Sweet Potato', 'Bell Pepper', 'King Weed', 'Leek', 'Onion', 'Cabbage', 'Radish', 'Peas', 'White Rose', 'Kidney Beans', 'Cilantro', 'Parsley']
 ];
 
-const userNameStored = localStorage.getItem('userName');
+const userNameStored = localStorage.getItem('userName') || '';
 
 class App extends Component {
     constructor(props) {
@@ -402,7 +402,7 @@ class App extends Component {
                                     userName={this.state.userName}
                                 />}
                         </div>
-                        : localStorage.getItem('userName').length > 0 ?
+                        : userNameStored.length > 0 ?
                             <p className="bg-dark-green center w-35 white ba br3 f2 mw5 mw7-ns mt7 pa5 ph5-ns shadow-5">Loading Your Farms...Please Wait!</p> :
                             <SignIn loadData={this.loadData} />
                 }
