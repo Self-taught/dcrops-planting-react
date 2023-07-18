@@ -4,6 +4,7 @@ import SignIn from "./SignIn/SignIn";
 import Plant from "./Plant/Plant";
 import Card from "./Card/Card";
 import AutoPlant from "./AutoPlant/AutoPlant";
+import Lands from "./Lands/Lands";
 import axios from "axios";
 import 'tachyons';
 import './App.css';
@@ -16,17 +17,19 @@ const seedTypes = [['Napa Cabbage', 'Eggplant', 'Strawberry', 'Ginger', 'King We
 ['Napa Cabbage', 'Sweet Potato', 'Bell Pepper', 'King Weed', 'Leek', 'Onion', 'Cabbage', 'Radish', 'Peas', 'White Rose', 'Kidney Beans', 'Cilantro', 'Parsley']
 ];
 
+const userNameStored = localStorage.getItem('userName');
 
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            userName: "",
+            userName: '',
             userData: [],
             currentSeeds: [],
             selectedSeeds: {},
             seedsToPlant: '',
             maxNfts: 0,
+            currentLand: '',
             totalLand: 'Loading...',
             totalPlots: 'Loading...',
             landData: [],
@@ -38,6 +41,8 @@ class App extends Component {
         this.addSeeds = this.addSeeds.bind(this)
         this.autoPlantSeeds = this.autoPlantSeeds.bind(this)
         this.setNav = this.setNav.bind(this)
+        this.selectLands = this.selectLands.bind(this)
+        this.plantSeeds = this.plantSeeds.bind(this)
     }
 
     getCurrentSeason = async () => {
@@ -72,10 +77,18 @@ class App extends Component {
     componentDidMount() {
         this.getCurrentSeason()
             .then(response => this.setState({ currentSeeds: seedTypes[response] }));
+
+        if (userNameStored.length > 0) {
+            this.findMultiple(userNameStored, 0).then(response => {
+                this.setState({ userName: userNameStored, userData: response })
+            })
+        }
+
     }
 
     findMultiple = async (user_name, offset) => {
         const url = 'https://api.hive-engine.com/rpc/contracts';
+        // const url = 'https://engine.rishipanthee.com/contracts';
         const params = {
             contract: 'nft',
             table: 'DCROPSinstances',
@@ -112,14 +125,21 @@ class App extends Component {
             if (!response[0]) {
                 alert('Please refresh and enter the right user name in lowercase letters!')
             } else {
-                this.setState({ userData: response, userName: response[0]['account'] })
+                this.setState({ userData: response, userName: response[0]['account'] });
+                localStorage.setItem('userName', userName);
             }
         })
     }
 
     setNav = (state) => {
-        this.setState({ planting: state }, () => console.log(this.state.planting))
+        this.setState({ planting: state })
     }
+
+    logoutHandler = () => {
+        localStorage.setItem('userName', '');
+        this.setState({ userName: '', userData: [] })
+    }
+
 
     filterSeeds = (title) => {
         if (this.state.selectedSeeds[title]) {
@@ -136,7 +156,7 @@ class App extends Component {
             const availableSeeds = totalSeeds.filter(el => {
                 const timestamp = JSON.parse(el.properties.secondary)
                 function getHoursDifference(timestamp) {
-                    const hoursPassed = 60 * 60 * 1000; // Number of milliseconds in a day
+                    const hoursPassed = 60 * 1000; // Number of milliseconds in a day
 
                     const currentDate = new Date();
                     const targetDate = new Date(timestamp * 1000); // Multiply by 1000 to convert seconds to milliseconds
@@ -149,7 +169,7 @@ class App extends Component {
                 // Example usage
                 const targetTimestamp = timestamp['cd'];
                 const daysDifference = getHoursDifference(targetTimestamp);
-                return daysDifference > 336;
+                return daysDifference > 20160;
             })
             const availableSeedIds = availableSeeds.map(el => el['_id'])
             return availableSeedIds;
@@ -158,62 +178,58 @@ class App extends Component {
         }
     }
 
-    filterLands = (e) => {
+    selectLands = (e) => {
         if (this.state.userData.length > 0) {
             const value = e.target.value;
 
             if (!value) {
                 return;
             }
-            const totalLands = this.state.userData.filter(el => {
-                const nftType = el.properties.name
-                if (value === 'Any') {
-                    return (
-                        nftType === 'Fairy Garden' ||
-                        nftType === 'Hi-Tec Land' ||
-                        nftType === 'Awesome Land' ||
-                        nftType === 'Trinity Land' ||
-                        nftType === 'Fertile Land' ||
-                        nftType === 'Average Farmland'
-                    );
-                }
-                return nftType === value;
-            });
+            this.setState({ currentLand: e.target.value }, () => this.filterLands(this.state.currentLand));
 
-            const emptyLands = [];
-            let totalEmptyPlots = 0;
-
-            totalLands.forEach(land => {
-                const plots = JSON.parse(land.properties.secondary)
-                const emptyPlotArray = [];
-                let foundPlot = null;
-                plots['p'].forEach((el, i) => {
-                    if (el === "") {
-                        totalEmptyPlots += 1;
-
-                        if (!foundPlot) {
-                            foundPlot = {
-                                landId: land['_id'],
-                                emptyPlots: []
-                            }
-                        }
-                        emptyPlotArray.push(i)
-                    }
-                });
-
-                if (foundPlot) {
-                    foundPlot.emptyPlots = emptyPlotArray;
-                    emptyLands.push(foundPlot)
-                }
-            })
-
-            this.setState({
-                totalLand: totalLands.length,
-                totalPlots: totalEmptyPlots,
-                landData: emptyLands
-            });
         }
     }
+
+    filterLands = (landType) => {
+        const totalLands = this.state.userData.filter(el => {
+            const nftType = el.properties.name
+            return nftType === landType;
+        });
+
+        const emptyLands = [];
+        let totalEmptyPlots = 0;
+
+        totalLands.forEach(land => {
+            const plots = JSON.parse(land.properties.secondary)
+            const emptyPlotArray = [];
+            let foundPlot = null;
+            plots['p'].forEach((el, i) => {
+                if (el === "") {
+                    totalEmptyPlots += 1;
+
+                    if (!foundPlot) {
+                        foundPlot = {
+                            landId: land['_id'],
+                            emptyPlots: []
+                        }
+                    }
+                    emptyPlotArray.push(i)
+                }
+            });
+
+            if (foundPlot) {
+                foundPlot.emptyPlots = emptyPlotArray;
+                emptyLands.push(foundPlot)
+            }
+        })
+
+        this.setState({
+            totalLand: totalLands.length,
+            totalPlots: totalEmptyPlots,
+            landData: emptyLands
+        });
+    }
+
 
     loadSeeds = () => {
         let selectedSeeds = '';
@@ -289,7 +305,6 @@ class App extends Component {
         }
 
 
-
         const keychain = window.hive_keychain;
         keychain.requestCustomJson(this.state.userName, 'dcrops', 'Active', JSON.stringify({ operation: "plantMultiple", payload: updatedFinalData }), 'Plant Seeds!', (response) => {
             if (response.success === true) {
@@ -299,9 +314,10 @@ class App extends Component {
                     selectedSeeds: {},
                     landData: this.state.landData.filter(el => !totalNfts.has(el['_id'])),
                     seedsToPlant: ''
+                }, () => {
+                    this.filterLands(this.state.currentLand)
+                    this.loadSeeds()
                 });
-
-                this.loadSeeds()
             }
         });
     };
@@ -318,6 +334,7 @@ class App extends Component {
                         <div>
                             <NavBar
                                 setNav={this.setNav}
+                                logoutHandler={this.logoutHandler}
                                 selectedNav={this.state.planting}
                             />
                             {this.state.planting ?
@@ -330,38 +347,10 @@ class App extends Component {
                                                 <p>Current total seeds: {this.state.maxNfts}</p>
                                                 <ul>{this.state.seedsToPlant}</ul>
                                                 <hr />
-                                                <div className="mv2">
-                                                    <p className="w-100 f4 mv1">Select the type of land: </p>
-                                                    <div className="container mv3">
-                                                        <input onClick={this.filterLands} type="radio" id="Hi-Tec Land" name="landType" value="Hi-Tec Land" />
-                                                        <p className="w-100 mv1 mh2" htmlFor="Hi-Tec Land">Hi-Tec Land</p><br />
-
-                                                        <input onClick={this.filterLands} type="radio" id="Trinity Land" name="landType" value="Trinity Land" />
-                                                        <p className="w-100 mv1 mh2" htmlFor="Trinity Land">Trinity Land</p><br />
-
-                                                        <input onClick={this.filterLands} type="radio" id="Fairy Garden" name="landType" value="Fairy Garden" />
-                                                        <p className="w-100 mv1 mh2" htmlFor="Fairy Garden">Fairy Garden</p><br />
-                                                    </div>
-                                                    <div className="container mv3">
-                                                        <input onClick={this.filterLands} type="radio" id="Awesome Land" name="landType" value="Awesome Land" />
-                                                        <p className="w-100 mv1 mh2" htmlFor="Awesome Land">Awesome Land</p><br />
-
-                                                        <input onClick={this.filterLands} type="radio" id="Fertile Land" name="landType" value="Fertile Land" />
-                                                        <p className="w-100 mv3 mh2" htmlFor="Fertile Land">Fertile Land</p><br />
-
-                                                        <input onClick={this.filterLands} type="radio" id="Average Farmland" name="landType" value="Average Farmland" />
-                                                        <p className="w-100 mv1 mh2" htmlFor="Average Farmland">Average Farmland</p><br />
-                                                    </div>
-                                                    <hr />
-
-                                                    <p>Total Plots Available to plant: {this.state.totalPlots}</p>
-                                                    <input
-                                                        onClick={this.plantSeeds}
-                                                        className="pa2 w-35 bg-green br3 center pointer ph4 grow"
-                                                        type="submit"
-                                                        value='Plant' />
-                                                    <p>After planting, change the land type to update land data. Otherwise land data may not update!</p>
-                                                </div>
+                                                <Lands
+                                                    selectLands={this.selectLands}
+                                                    plots={this.state.totalPlots}
+                                                    plantSeeds={this.plantSeeds} />
                                             </div>
                                             <Plant />
                                         </div>
@@ -413,14 +402,15 @@ class App extends Component {
                                     userName={this.state.userName}
                                 />}
                         </div>
-                        : <SignIn loadData={this.loadData} />
+                        : localStorage.getItem('userName').length > 0 ?
+                            <p className="bg-dark-green center w-35 white ba br3 f2 mw5 mw7-ns mt7 pa5 ph5-ns shadow-5">Loading Your Farms...Please Wait!</p> :
+                            <SignIn loadData={this.loadData} />
                 }
 
             </div >
 
         );
     }
-
 }
 
 export default App;

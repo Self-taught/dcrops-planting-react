@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './NavBar.css'
 
 const NavBar = (props) => {
@@ -6,7 +6,6 @@ const NavBar = (props) => {
     const selectedClass = 'bg-green ba br3 ph5 pv3';
 
     const clickHandler = (e) => {
-        console.log(e.target.innerText);
         const selection = e.target.innerText;
         if (selection === 'Planting') {
             props.setNav(true)
@@ -15,8 +14,9 @@ const NavBar = (props) => {
         }
     }
 
+
     return (
-        <header className='bg-black w-100 ph3 pv3 pv2-ns ph4-m ph5-l flex justify-around'>
+        <header className='bg-black w-100 ph3 pv3 pv2-ns ph4-m ph5-l flex justify-between'>
             <p
                 className={`white ph3 f2 pointer ${props.selectedNav ? selectedClass : ''}`}
                 onClick={clickHandler}
@@ -27,8 +27,11 @@ const NavBar = (props) => {
                 onClick={clickHandler}
                 value='Crafting/Cooking'
             >Crafting/Cooking</p>
+            <p
+                onClick={props.logoutHandler}
+                className='bg-dark-pink grow white br3 pointer f3 pa3 pv4'>Logout</p>
         </header >
     )
-}
+    }
 
-export default NavBar;
+    export default NavBar;
