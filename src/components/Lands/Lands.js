@@ -14,8 +14,8 @@ const Lands = (props) => {
             <div key={index} className="container mv3">
                 {landGroup.map((landType) => (
                     <div key={landType} className="flex justify-between">
-                    <input onClick={props.selectLands} type="radio" id={landType} name="landType" value={landType} />
-                    <p className="w-100 mv1 mh3" htmlFor={landType}>{landType}</p><br />
+                        <input onClick={props.selectLands} type="radio" id={landType} name="landType" value={landType} />
+                        <p className="w-100 mv1 mh3" htmlFor={landType}>{landType}</p><br />
                     </div>
                 )
                 )}

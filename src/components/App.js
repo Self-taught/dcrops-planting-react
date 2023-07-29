@@ -46,7 +46,7 @@ class App extends Component {
     }
 
     getCurrentSeason = async () => {
-        const url = 'https://api.hive-engine.com/rpc/contracts';
+        const url = 'https://herpc.dtools.dev/contracts';
         const params = {
             contract: 'nft',
             table: 'DCROPSinstances',
@@ -87,7 +87,7 @@ class App extends Component {
     }
 
     findMultiple = async (user_name, offset) => {
-        const url = 'https://api.hive-engine.com/rpc/contracts';
+        const url = 'https://herpc.dtools.dev/contracts';
         // const url = 'https://engine.rishipanthee.com/contracts';
         const params = {
             contract: 'nft',
