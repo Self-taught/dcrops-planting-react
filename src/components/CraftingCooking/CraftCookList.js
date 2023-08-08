@@ -815,11 +815,11 @@ const CookingList = [
             'Potato': 2,
             'Peas': 2,
             'Basil': 2,
-            'Parsley': 1,
+            'Parsley': 2,
             'Oil': 3,
             'Ketchup': 1
         },
-        equipment: 'Depp Fryer'
+        equipment: 'Deep Fryer'
     },
     {
         title: 'Gingerbread Cookie',
