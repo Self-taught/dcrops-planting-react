@@ -136,10 +136,7 @@ class AutoPlant extends Component {
 
   addAutoPlantSeeds = () => {
     this.filterData();
-    const seedTypes =
-      this.state.selectedSeed === "All"
-        ? this.props.currentSeeds
-        : this.state.selectedSeed;
+    const seedTypes = this.props.currentSeeds;
 
     const maxSeedsToPlant = 36;
     const maxTotalNfts = 48;
@@ -157,29 +154,21 @@ class AutoPlant extends Component {
       return;
     }
 
-    let currentSeedsToPlant;
+    let currentSeedsToPlant = totalAvailableSeeds.filter(
+      (seed) => seed.properties.name === seedTypes[0]
+    );
 
-    if (this.state.selectedSeed === "All") {
-      currentSeedsToPlant = totalAvailableSeeds.filter(
-        (seed) => seed.properties.name === seedTypes[0]
-      );
-    } else {
-      currentSeedsToPlant = totalAvailableSeeds;
-    }
-
-    if (this.state.selectedSeed !== "All") {
-      while (currentSeedsToPlant.length < maxSeedsToPlant) {
-        if (totalAvailableSeeds.length < maxSeedsToPlant) {
-          currentSeedsToPlant = currentSeedsToPlant.concat(totalAvailableSeeds);
-          break;
-        }
-        seedTypes.shift();
-        currentSeedsToPlant = currentSeedsToPlant.concat(
-          totalAvailableSeeds.filter(
-            (seed) => seed.properties.name === seedTypes[0]
-          )
-        );
+    while (currentSeedsToPlant.length < maxSeedsToPlant) {
+      if (totalAvailableSeeds.length < maxSeedsToPlant) {
+        currentSeedsToPlant = currentSeedsToPlant.concat(totalAvailableSeeds);
+        break;
       }
+      seedTypes.shift();
+      currentSeedsToPlant = currentSeedsToPlant.concat(
+        totalAvailableSeeds.filter(
+          (seed) => seed.properties.name === seedTypes[0]
+        )
+      );
     }
 
     currentSeedsToPlant = currentSeedsToPlant.slice(0, maxSeedsToPlant);
@@ -389,10 +378,10 @@ class AutoPlant extends Component {
           />
         </div>
         <p className="bg-dark-pink pa2 br3 white">
-          DON'T REFRESH AND THEN PLANT AGAIN. IT TAKES 10-20 SEC FOR HIVE ENGINE
-          TO UPDATE DATA. SO, IF YOU PLANT SOMETHING, DO NOT REFRESH AND PLANT
-          DIFFERENT SEEDS INSTANTLY AGAIN. IT MAY SEND SEEDS INTO 14 DAYS
-          COOLDOWN MODE
+          DON'T REFRESH AND THEN PLANT AGAIN. IT TAKES 10-20 SEC FOR
+          HIVE ENGINE TO UPDATE DATA. SO, IF YOU PLANT SOMETHING, DO NOT REFRESH
+          AND PLANT DIFFERENT SEEDS INSTANTLY AGAIN. IT MAY SEND SEEDS INTO 14
+          DAYS COOLDOWN MODE
         </p>
       </div>
     );
