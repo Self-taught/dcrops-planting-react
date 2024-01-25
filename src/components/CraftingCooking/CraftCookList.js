@@ -830,6 +830,16 @@ const CookingList = [
         },
         equipment: 'Oven'
     },
+    {
+        title: 'Candy Cane Cake',
+        ingredients: {
+            'Flour': 1,
+            'Sugar': 1,
+            'Basil': 5,
+            'Raspberry': 1,
+        },
+        equipment: 'Oven'
+    },
 ]
 
 export { CraftList, CookingList };

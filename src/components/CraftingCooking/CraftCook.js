@@ -13,13 +13,17 @@ class CraftCook extends Component {
     }
 
     getData = () => {
-        axios.get(`https://dcrops.com/db/data?u=${this.props.userName}`)
+        axios.post(`https://dcrops.com/db/userItems`, {username: this.props.userName, types: ['CROP', 'CRAFT', 'FOOD']})
             .then(response => {
-                console.log(response.data.result)
-                const currentData = response.data.result
-                this.setState({ inventory: [...currentData.crops, ...currentData.crafts, ...currentData.food] })
+                const currentData = response.data.result;
+                this.setState({ inventory: currentData });
+                
             })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
     }
+    
 
 
 

@@ -29,10 +29,9 @@ const CraftCookCards = (props) => {
         for (const el in itemList) {
             const items = itemList[el];
             items.forEach(n => {
-                const itemType = n.type || 'crop';
                 const itemId = n.id;
                 itemSet.add(itemId);
-                ings.push(`${itemType.toLowerCase()},${itemId}`);
+                ings.push(itemId);
             })
         }
 
