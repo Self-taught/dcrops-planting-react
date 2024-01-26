@@ -50,7 +50,6 @@ const CraftCookCards = (props) => {
         }), 'Cook Craft items!', (response) => {
             if (response.success === true) {
                 props.itemsUsed(itemSet)
-                console.log('success')
             }
         })
     }

@@ -14,7 +14,10 @@ const Ingredients = (props) => {
         let filtredInventory = inventory.filter(
             el => el.name === keyPair && el.quality === currentAvailable
         );
-        let currentlySelected = filtredInventory.slice(0, valuePair) || [];
+
+        let currentlySelected;
+
+        currentlySelected = filtredInventory.length >= valuePair ? filtredInventory.slice(0, valuePair) : [];
 
         // Code to autoselect the available recipe quantities
         // if (currentlySelected.length !== valuePair) {
@@ -47,6 +50,7 @@ const Ingredients = (props) => {
         setAvailable(filtredInventory);
         addItems(keyPair, currentlySelected);
     }, [inventory, keyPair, valuePair, addItems, currentAvailable]);
+
 
     const clickHandler = (currentChoice) => {
         if (currentChoice === 2) {
